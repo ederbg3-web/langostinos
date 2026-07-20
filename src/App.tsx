@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, push, onValue, update, remove } from 'firebase/database';
 import { Plus, Printer, Check, ClipboardList, ChefHat, Trash2, X } from 'lucide-react';
@@ -18,8 +19,34 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+type View = 'caja' | 'cocina';
+type CheckField = 'checkMesero' | 'checkCocina';
+type MenuCategory = 'Entradas' | 'Cocteles' | 'Ceviche' | 'Aguachile' | 'Camarones' | 'Filetes' | 'Mojarras' | 'Caldos' | 'Pulpo' | 'Infantil';
+
+interface Item {
+  name: string;
+  variant?: string | null;
+  price: number;
+  cantidad: number;
+  completado?: boolean;
+  checkMesero?: boolean;
+  checkCocina?: boolean;
+}
+
+interface Mesa {
+  id: string;
+  nombre: string;
+  items?: Record<string, Item>;
+  timestamp?: number;
+}
+
+type Dish =
+  | { id: string; name: string; price: number; sizes?: never; isMarketPrice?: false }
+  | { id: string; name: string; sizes: Record<string, number>; price?: never; isMarketPrice?: false }
+  | { id: string; name: string; isMarketPrice: true; price?: never; sizes?: never };
+
 // TU MENÚ COMPLETO Y REAL
-const MENU = {
+const MENU: Record<MenuCategory, Dish[]> = {
   Entradas: [
     { id: 'e1', name: 'Consomé', price: 30 },
     { id: 'e2', name: 'Quesadilla de Cazón', price: 60 },
@@ -84,38 +111,41 @@ const MENU = {
 };
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('caja');
-  const [mesas, setMesas] = useState({});
-  const [selectedMesaId, setSelectedMesaId] = useState(null);
-  const [activeTab, setActiveTab] = useState('Entradas');
+  const [currentView, setCurrentView] = useState<View>('caja');
+  const [mesas, setMesas] = useState<Record<string, Mesa>>({});
+  const [selectedMesaId, setSelectedMesaId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<MenuCategory>('Entradas');
   const [nuevaMesaNombre, setNuevaMesaNombre] = useState('');
   const [showTicketModal, setShowTicketModal] = useState(false);
 
   useEffect(() => {
     const mesasRef = ref(db, 'mesas');
     const unsubscribe = onValue(mesasRef, (snapshot) => {
-      const data = snapshot.val();
+      const data = snapshot.val() as Record<string, Mesa> | null;
       setMesas(data || {});
     });
     return () => unsubscribe();
   }, []);
 
-  const handleCrearMesa = (e) => {
+  const handleCrearMesa = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!nuevaMesaNombre.trim()) return;
     const mesasRef = ref(db, 'mesas');
     const newMesaRef = push(mesasRef);
+    const newMesaId = newMesaRef.key;
+    if (!newMesaId) return;
+
     set(newMesaRef, {
-      id: newMesaRef.key,
+      id: newMesaId,
       nombre: nuevaMesaNombre.trim(),
       items: {},
       timestamp: Date.now()
     });
-    setSelectedMesaId(newMesaRef.key);
+    setSelectedMesaId(newMesaId);
     setNuevaMesaNombre('');
   };
 
-  const handleAgregarItem = (name, variant, price) => {
+  const handleAgregarItem = (name: string, variant: string | null, price: number) => {
     if (!selectedMesaId) return;
     
     const itemKey = `${name}-${variant || 'unico'}`.replace(/[^a-zA-Z0-9-]/g, '_');
@@ -152,12 +182,14 @@ export default function App() {
     }
   };
 
-  const handleToggleCheck = (mesaId, itemKey, field) => {
+  const handleToggleCheck = (mesaId: string, itemKey: string, field: CheckField) => {
     const itemRef = ref(db, `mesas/${mesaId}/items/${itemKey}`);
-    const item = mesas[mesaId].items[itemKey];
+    const item = mesas[mesaId]?.items?.[itemKey];
+    if (!item) return;
+
     const currentValue = item[field] || false;
     
-    const updates = { [field]: !currentValue };
+    const updates: Partial<Item> = { [field]: !currentValue };
     
     const willCheckCocina = field === 'checkCocina' ? !currentValue : item.checkCocina;
     const willCheckMesero = field === 'checkMesero' ? !currentValue : item.checkMesero;
@@ -171,18 +203,18 @@ export default function App() {
     update(itemRef, updates);
   };
 
-  const handleEliminarMesa = (mesaId) => {
+  const handleEliminarMesa = (mesaId: string) => {
     if (window.confirm('¿Desea cerrar y archivar esta mesa?')) {
       remove(ref(db, `mesas/${mesaId}`));
       if (selectedMesaId === mesaId) setSelectedMesaId(null);
     }
   };
 
-  const handleEliminarItem = (mesaId, itemKey) => {
+  const handleEliminarItem = (mesaId: string, itemKey: string) => {
     remove(ref(db, `mesas/${mesaId}/items/${itemKey}`));
   };
 
-  const calcularTotalMesa = (mesa) => {
+  const calcularTotalMesa = (mesa: Mesa): number => {
     if (!mesa?.items) return 0;
     return Object.values(mesa.items).reduce((sum, item) => sum + (item.price * item.cantidad), 0);
   };
@@ -282,13 +314,13 @@ export default function App() {
                   
                   {/* Menú desplazable para que quepan todas tus categorías */}
                   <div className="flex bg-slate-100 border-b border-slate-200 overflow-x-auto whitespace-nowrap hide-scrollbar">
-                    {Object.keys(MENU).map((cat) => (
+                    {(Object.keys(MENU) as MenuCategory[]).map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setActiveTab(cat)}
                         className={`px-6 py-4 text-center font-bold text-base border-b-2 transition-colors flex-shrink-0 ${activeTab === cat ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                       >
-                        {cat === 'Cocteles' ? 'Cócteles' : cat === 'PlatosFuertes' ? 'Platos Fuertes' : cat}
+                        {cat === 'Cocteles' ? 'Cócteles' : cat}
                       </button>
                     ))}
                   </div>
@@ -316,7 +348,7 @@ export default function App() {
                             <button
                               onClick={() => {
                                 const precio = window.prompt(`Ingresa el precio de la ${dish.name} según el peso ($):`);
-                                if (precio && !isNaN(precio) && Number(precio) > 0) {
+                                if (precio && !Number.isNaN(Number(precio)) && Number(precio) > 0) {
                                   // Genera una variante con el precio para que no se revuelvan si piden 2 mojarras de distinto precio
                                   handleAgregarItem(dish.name, `Precio: $${precio}`, Number(precio));
                                 } else if (precio !== null) {
@@ -451,8 +483,8 @@ export default function App() {
                       </span>
                     </div>
                     <div className="space-y-3">
-                      {Object.entries(mesa.items)
-                        .filter(([_, item]) => !item.completado)
+                      {Object.entries(mesa.items ?? {})
+                        .filter(([, item]) => !item.completado)
                         .map(([key, item]) => (
                           <div 
                             key={key} 
