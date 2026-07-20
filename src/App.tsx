@@ -3,10 +3,11 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, push, onValue, update, remove } from 'firebase/database';
 import { Plus, Printer, Check, ClipboardList, ChefHat, Trash2, X } from 'lucide-react';
 
-// YA TIENE TUS LLAVES REALES DE FIREBASE
+// Tu configuración segura de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCpscFLv3JoF6aaiZ431oabdayc_97MKfE",
   authDomain: "app-langos.firebaseapp.com",
+  databaseURL: "https://app-langos-default-rtdb.firebaseio.com",
   projectId: "app-langos",
   storageBucket: "app-langos.firebasestorage.app",
   messagingSenderId: "931389132865",
@@ -17,22 +18,68 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Menú sin acentos en las llaves para evitar errores del navegador
+// TU MENÚ COMPLETO Y REAL
 const MENU = {
-  Cocteles: [
-    { id: 'c1', name: 'Cóctel de Camarón', sizes: { Chico: 120, Mediano: 160, Grande: 200 } },
-    { id: 'c2', name: 'Cóctel de Pulpo', sizes: { Chico: 120, Mediano: 160, Grande: 200 } },
-    { id: 'c3', name: 'Cóctel Campechano', sizes: { Chico: 120, Mediano: 160, Grande: 200 } }
-  ],
   Entradas: [
-    { id: 'e1', name: 'Quesadilla de Cazón', price: 45 },
-    { id: 'e2', name: 'Quesadilla de Camarón', price: 55 },
-    { id: 'e3', name: 'Tostada de Ceviche', price: 60 }
+    { id: 'e1', name: 'Consomé', price: 30 },
+    { id: 'e2', name: 'Quesadilla de Cazón', price: 60 },
+    { id: 'e3', name: 'Quesadilla de Camarón', price: 75 },
+    { id: 'e4', name: 'Empanada de Camarón', price: 65 },
+    { id: 'e5', name: 'Tostada de Camarón', price: 70 },
+    { id: 'e6', name: 'Tostada de Pulpo', price: 65 }
   ],
-  Bebidas: [
-    { id: 'b1', name: 'Cerveza XX Lager', price: 40 },
-    { id: 'b2', name: 'Clamato Preparado', price: 65 },
-    { id: 'b3', name: 'Refresco', price: 30 }
+  Cocteles: [
+    { id: 'c1', name: 'Cóctel de Camarón', sizes: { Chico: 70, Mediano: 100, Grande: 165 } },
+    { id: 'c2', name: 'Vuelve a la vida', sizes: { Chico: 75, Mediano: 110, Grande: 175 } }
+  ],
+  Ceviche: [
+    { id: 'ce1', name: 'Ceviche de Camarón', price: 220 },
+    { id: 'ce2', name: 'Ceviche de Pescado', price: 100 },
+    { id: 'ce3', name: 'Tropical Langostinos', price: 230 }
+  ],
+  Aguachile: [
+    { id: 'ag1', name: 'Aguachile Normal', price: 230 },
+    { id: 'ag2', name: 'Aguachile Mango Habanero', price: 240 }
+  ],
+  Camarones: [
+    { id: 'cam1', name: 'Camarones Fritos', price: 170 },
+    { id: 'cam2', name: 'Camarones al Mojo de ajo', price: 170 },
+    { id: 'cam3', name: 'Camarones a la Diabla', price: 170 },
+    { id: 'cam4', name: 'Camarones Empanizados', price: 170 },
+    { id: 'cam5', name: 'Camarones Empanizados Rellenos', price: 170 }
+  ],
+  Filetes: [
+    { id: 'f1', name: 'Filete a la Plancha', price: 130 },
+    { id: 'f2', name: 'Filete al Mojo de ajo', price: 140 },
+    { id: 'f3', name: 'Filete al Ajillo', price: 140 },
+    { id: 'f4', name: 'Filete Empanizado', price: 140 },
+    { id: 'f5', name: 'Filete a la Diabla', price: 140 },
+    { id: 'f6', name: 'Filete Empapelado', price: 140 },
+    { id: 'f7', name: 'Filete Relleno Empapelado', price: 180 },
+    { id: 'f8', name: 'Filete Relleno Empanizado', price: 180 }
+  ],
+  Mojarras: [
+    { id: 'm1', name: 'Mojarra Frita', isMarketPrice: true },
+    { id: 'm2', name: 'Mojarra al Mojo', isMarketPrice: true },
+    { id: 'm3', name: 'Mojarra a la Diabla', isMarketPrice: true },
+    { id: 'm4', name: 'Mojarra al Ajillo', isMarketPrice: true },
+    { id: 'm5', name: 'Mojarra Rellena', isMarketPrice: true },
+    { id: 'm6', name: 'Mojarra Embarazada', isMarketPrice: true }
+  ],
+  Caldos: [
+    { id: 'cal1', name: 'Caldo de Camarón', price: 150 },
+    { id: 'cal2', name: 'Caldo de Jaiba', price: 140 },
+    { id: 'cal3', name: 'Caldo de Almeja', price: 130 },
+    { id: 'cal4', name: 'Cazuela de Mariscos', price: 170 }
+  ],
+  Pulpo: [
+    { id: 'p1', name: 'Pulpo Enamorado', price: 160 },
+    { id: 'p2', name: 'Pulpo al Ajillo', price: 160 },
+    { id: 'p3', name: 'Pulpo al Mojo de ajo', price: 160 },
+    { id: 'p4', name: 'Pulpo a la Diabla', price: 160 }
+  ],
+  Infantil: [
+    { id: 'i1', name: 'Nuggets de Pollo', price: 80 }
   ]
 };
 
@@ -40,7 +87,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('caja');
   const [mesas, setMesas] = useState({});
   const [selectedMesaId, setSelectedMesaId] = useState(null);
-  const [activeTab, setActiveTab] = useState('Cocteles');
+  const [activeTab, setActiveTab] = useState('Entradas');
   const [nuevaMesaNombre, setNuevaMesaNombre] = useState('');
   const [showTicketModal, setShowTicketModal] = useState(false);
 
@@ -71,9 +118,7 @@ export default function App() {
   const handleAgregarItem = (name, variant, price) => {
     if (!selectedMesaId) return;
     
-    // Llave súper segura para evitar caídas en Firebase
     const itemKey = `${name}-${variant || 'unico'}`.replace(/[^a-zA-Z0-9-]/g, '_');
-    
     const itemRef = ref(db, `mesas/${selectedMesaId}/items/${itemKey}`);
     const existingItem = mesas[selectedMesaId]?.items?.[itemKey];
 
@@ -164,6 +209,9 @@ export default function App() {
           }
           .no-print { display: none !important; }
         }
+        /* Ocultar barra de scroll pero permitir deslizamiento */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       <nav className="bg-blue-600 text-white shadow-md no-print">
@@ -172,20 +220,22 @@ export default function App() {
             <span>⚓</span>
             <span>Marisquería Realtime POS</span>
           </div>
-          <div className="flex bg-blue-700 p-1 rounded-lg">
+          <div className="flex bg-blue-700 p-1 rounded-lg overflow-hidden">
             <button 
               onClick={() => setCurrentView('caja')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-all ${currentView === 'caja' ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-100 hover:bg-blue-600'}`}
+              className={`flex items-center space-x-2 px-3 md:px-4 py-2 text-sm md:text-base font-medium transition-all ${currentView === 'caja' ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-100 hover:bg-blue-600'}`}
             >
               <ClipboardList size={18} />
-              <span>💻 Vista Caja</span>
+              <span className="hidden sm:inline">💻 Vista Caja</span>
+              <span className="sm:hidden">Caja</span>
             </button>
             <button 
               onClick={() => setCurrentView('cocina')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-all ${currentView === 'cocina' ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-100 hover:bg-blue-600'}`}
+              className={`flex items-center space-x-2 px-3 md:px-4 py-2 text-sm md:text-base font-medium transition-all ${currentView === 'cocina' ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-100 hover:bg-blue-600'}`}
             >
               <ChefHat size={18} />
-              <span>🍳 Vista Cocina</span>
+              <span className="hidden sm:inline">🍳 Vista Cocina</span>
+              <span className="sm:hidden">Cocina</span>
             </button>
           </div>
         </div>
@@ -206,7 +256,8 @@ export default function App() {
                   />
                   <button type="submit" className="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
                     <Plus size={20} />
-                    <span>+ Crear Mesa</span>
+                    <span className="hidden sm:inline">+ Crear Mesa</span>
+                    <span className="sm:hidden">Crear</span>
                   </button>
                 </form>
 
@@ -228,25 +279,28 @@ export default function App() {
 
               {selectedMesaId ? (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="flex bg-slate-100 border-b border-slate-200">
+                  
+                  {/* Menú desplazable para que quepan todas tus categorías */}
+                  <div className="flex bg-slate-100 border-b border-slate-200 overflow-x-auto whitespace-nowrap hide-scrollbar">
                     {Object.keys(MENU).map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setActiveTab(cat)}
-                        className={`flex-1 py-4 text-center font-bold text-base border-b-2 transition-colors ${activeTab === cat ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                        className={`px-6 py-4 text-center font-bold text-base border-b-2 transition-colors flex-shrink-0 ${activeTab === cat ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                       >
-                        {cat === 'Cocteles' ? 'Cócteles' : cat}
+                        {cat === 'Cocteles' ? 'Cócteles' : cat === 'PlatosFuertes' ? 'Platos Fuertes' : cat}
                       </button>
                     ))}
                   </div>
 
                   <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {MENU[activeTab]?.map((dish) => (
                         <div key={dish.id} className="p-4 border border-slate-200 rounded-xl bg-slate-50 flex flex-col justify-between space-y-3">
-                          <span className="font-bold text-lg text-slate-900">{dish.name}</span>
+                          <span className="font-bold text-lg text-slate-900 leading-tight">{dish.name}</span>
+                          
                           {dish.sizes ? (
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-2 mt-2">
                               {Object.entries(dish.sizes).map(([size, price]) => (
                                 <button
                                   key={size}
@@ -258,10 +312,25 @@ export default function App() {
                                 </button>
                               ))}
                             </div>
+                          ) : dish.isMarketPrice ? (
+                            <button
+                              onClick={() => {
+                                const precio = window.prompt(`Ingresa el precio de la ${dish.name} según el peso ($):`);
+                                if (precio && !isNaN(precio) && Number(precio) > 0) {
+                                  // Genera una variante con el precio para que no se revuelvan si piden 2 mojarras de distinto precio
+                                  handleAgregarItem(dish.name, `Precio: $${precio}`, Number(precio));
+                                } else if (precio !== null) {
+                                  alert('Por favor ingresa un precio válido con números.');
+                                }
+                              }}
+                              className="w-full mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors shadow-sm active:scale-95"
+                            >
+                              Agregar (Pedir Precio)
+                            </button>
                           ) : (
                             <button
                               onClick={() => handleAgregarItem(dish.name, null, dish.price)}
-                              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm transition-colors shadow-sm active:scale-95"
+                              className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm transition-colors shadow-sm active:scale-95"
                             >
                               Agregar (${dish.price})
                             </button>
@@ -297,7 +366,7 @@ export default function App() {
                       </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto space-y-3 pr-1 my-2">
+                    <div className="flex-1 overflow-y-auto space-y-3 pr-1 my-2 hide-scrollbar">
                       {mesas[selectedMesaId].items ? (
                         Object.entries(mesas[selectedMesaId].items).map(([key, item]) => (
                           <div 
@@ -370,7 +439,7 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {mesasActivasCocina.length > 0 ? (
               mesasActivasCocina.map((mesa) => (
                 <div key={mesa.id} className="bg-white border-2 border-slate-200 rounded-2xl shadow-sm p-5 flex flex-col justify-between space-y-4">
