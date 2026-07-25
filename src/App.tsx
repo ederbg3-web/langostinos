@@ -281,7 +281,23 @@ export default function App() {
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                   
                   {/* Menú desplazable para que quepan todas tus categorías */}
-                  <div className="flex bg-slate-100 border-b border-slate-200 overflow-x-auto whitespace-nowrap hide-scrollbar">
+                  {/* --- NUEVO MENÚ DE CATEGORÍAS TIPO PÍLDORAS --- */}
+                  <div className="flex flex-wrap gap-2 p-4 bg-slate-100 border-b border-slate-200">
+                    {Object.keys(MENU).map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setActiveTab(cat)}
+                        className={`px-4 py-2 rounded-full font-bold text-sm transition-all shadow-sm ${
+                          activeTab === cat 
+                            ? 'bg-blue-600 text-white scale-105 ring-2 ring-blue-300' 
+                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-blue-600'
+                        }`}
+                      >
+                        {cat === 'Cocteles' ? 'Cócteles' : cat === 'PlatosFuertes' ? 'Platos Fuertes' : cat}
+                      </button>
+                    ))}
+                  </div>
+                  {/* ----------------------------------------------- */}
                     {Object.keys(MENU).map((cat) => (
                       <button
                         key={cat}
